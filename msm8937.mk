@@ -121,6 +121,7 @@ PRODUCT_PACKAGES += \
     libmm-qcamera \
     libshims_libui \
     libstdc++.vendor \
+    libwui \
     Snap
 
 # Display
