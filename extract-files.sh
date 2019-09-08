@@ -72,6 +72,9 @@ function blob_fixup() {
         vendor/lib64/libwvhidl.so)
             "${PATCHELF}" --replace-needed "libprotobuf-cpp-lite.so" "libprotobuf-cpp-lite-v29.so" "${2}"
             ;;
+#        vendor/lib/hw/camera.msm8953.so)
+#            "${PATCHELF}" --replace-needed "libui.so" "libshims_libui.so" "${2}"
+#            ;;
     esac
 }
 
