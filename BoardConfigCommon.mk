@@ -155,11 +155,7 @@ TARGET_USES_INTERACTION_BOOST := true
 BOARD_USES_QCOM_HARDWARE := true
 
 # Recovery
-ifeq ($(AB_OTA_UPDATER), true)
-TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/fstab_AB.recovery.qcom
-else
 TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/fstab.recovery.qcom
-endif
 
 # RIL
 TARGET_USES_OLD_MNC_FORMAT := true
