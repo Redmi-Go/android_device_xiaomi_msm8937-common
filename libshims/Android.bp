@@ -20,3 +20,20 @@ cc_library_shared {
     srcs: ["GraphicBuffer.cpp"],
     vendor: true,
 }
+
+cc_library_shared {
+    name: "libshims_binder",
+    proprietary: true,
+    defaults: ["hidl_defaults"],
+    srcs: [
+        "libshims_binder.cpp",
+    ],
+    cflags: [
+        "-Werror",
+        "-Wextra",
+        "-Wall",
+    ],
+    shared_libs: [
+        "libutils",
+    ],
+}
