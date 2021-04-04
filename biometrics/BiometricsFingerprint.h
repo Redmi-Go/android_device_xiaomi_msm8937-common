@@ -69,6 +69,10 @@ private:
     static FingerprintAcquiredInfo VendorAcquiredFilter(int32_t error, int32_t* vendorCode);
     static BiometricsFingerprint* sInstance;
 
+    static void setFpVendorProp(const char *fp_vendor);
+    static fingerprint_device_t* getDeviceForVendor(const char *class_name);
+    static fingerprint_device_t* getFingerprintDevice();
+
     std::mutex mClientCallbackMutex;
     sp<IBiometricsFingerprintClientCallback> mClientCallback;
     fingerprint_device_t *mDevice;

@@ -22,6 +22,7 @@
 #include <hardware/fingerprint.h>
 #include "BiometricsFingerprint.h"
 
+#include <cutils/properties.h>
 #include <inttypes.h>
 #include <unistd.h>
 
@@ -211,11 +212,16 @@ IBiometricsFingerprint* BiometricsFingerprint::getInstance() {
     return sInstance;
 }
 
-fingerprint_device_t* BiometricsFingerprint::openHal() {
+void BiometricsFingerprint::setFpVendorProp(const char *fp_vendor) {
+    property_set("persist.vendor.sys.fp.vendor", fp_vendor);
+    property_set("ro.boot.fpsensor", fp_vendor);
+}
+
+fingerprint_device_t* BiometricsFingerprint::getDeviceForVendor(const char *class_name) {
     int err;
     const hw_module_t *hw_mdl = nullptr;
-    ALOGD("Opening fingerprint hal library...");
-    if (0 != (err = hw_get_module(FINGERPRINT_HARDWARE_MODULE_ID, &hw_mdl))) {
+    ALOGD("Opening fingerprint hal library %s ...", class_name);
+    if (0 != (err = hw_get_module_by_class(FINGERPRINT_HARDWARE_MODULE_ID, class_name, &hw_mdl))) {
         ALOGE("Can't open fingerprint HW Module, error: %d", err);
         return nullptr;
     }
@@ -247,6 +253,49 @@ fingerprint_device_t* BiometricsFingerprint::openHal() {
 
     fingerprint_device_t* fp_device =
         reinterpret_cast<fingerprint_device_t*>(device);
+
+    if (0 != (err =
+            fp_device->set_notify(fp_device, BiometricsFingerprint::notify))) {
+        ALOGE("Can't register fingerprint module callback, error: %d", err);
+        return nullptr;
+    }
+
+    return fp_device;
+}
+
+fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
+{
+    fingerprint_device_t *fp_device;
+
+    fp_device = BiometricsFingerprint::getDeviceForVendor("fpc");
+    if (fp_device == nullptr) {
+        ALOGE("Failed to load fpc fingerprint module");
+    } else {
+        BiometricsFingerprint::setFpVendorProp("fpc");
+        return fp_device;
+    }
+
+    fp_device = BiometricsFingerprint::getDeviceForVendor("goodix");
+    if (fp_device == nullptr) {
+        ALOGE("Failed to load goodix fingerprint module");
+    } else {
+        BiometricsFingerprint::setFpVendorProp("goodix");
+        return fp_device;
+    }
+
+    BiometricsFingerprint::setFpVendorProp("none");
+
+    return nullptr;
+}
+
+fingerprint_device_t* BiometricsFingerprint::openHal() {
+    int err;
+
+    fingerprint_device_t *fp_device;
+    fp_device = BiometricsFingerprint::getFingerprintDevice();
+    if (fp_device == nullptr) {
+        return nullptr;
+    }
 
     if (0 != (err =
             fp_device->set_notify(fp_device, BiometricsFingerprint::notify))) {
