@@ -26,6 +26,8 @@
 #include <inttypes.h>
 #include <unistd.h>
 
+extern char device_name[PROPERTY_VALUE_MAX];
+
 namespace android {
 namespace hardware {
 namespace biometrics {
@@ -219,8 +221,13 @@ void BiometricsFingerprint::setFpVendorProp(const char *fp_vendor) {
 fingerprint_device_t* BiometricsFingerprint::getDeviceForVendor(const char *class_name) {
     int err;
     const hw_module_t *hw_mdl = nullptr;
-    ALOGD("Opening fingerprint hal library %s ...", class_name);
-    if (0 != (err = hw_get_module_by_class(FINGERPRINT_HARDWARE_MODULE_ID, class_name, &hw_mdl))) {
+    char temp_module_name[PATH_MAX];
+    const char *module_name;
+
+    snprintf(temp_module_name, sizeof(temp_module_name), "%s_%s", device_name, class_name);
+    module_name = (const char *) &temp_module_name;
+    ALOGD("Opening fingerprint hal library %s ...", module_name);
+    if (0 != (err = hw_get_module_by_class(FINGERPRINT_HARDWARE_MODULE_ID, module_name, &hw_mdl))) {
         ALOGE("Can't open fingerprint HW Module, error: %d", err);
         return nullptr;
     }

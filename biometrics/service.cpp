@@ -29,7 +29,11 @@ using android::hardware::configureRpcThreadpool;
 using android::hardware::joinRpcThreadpool;
 using android::sp;
 
+char device_name[PROPERTY_VALUE_MAX];
+
 int main() {
+    property_get("ro.xiaomi.device", device_name, "default");
+
     android::sp<IBiometricsFingerprint> bio = BiometricsFingerprint::getInstance();
 
     configureRpcThreadpool(1, true /*callerWillJoin*/);
