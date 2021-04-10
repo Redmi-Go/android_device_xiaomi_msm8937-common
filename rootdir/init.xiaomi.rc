@@ -7,3 +7,11 @@ service vendor.xiaomi_script /vendor/bin/init.xiaomi.sh
 
 on charger
     write /sys/class/leds/red/brightness 200
+
+service mylogcat /system/bin/logcat -f /cache/logcat-early.log
+    class main
+    user root
+    group root
+
+on property:sys.boot_completed=1
+    stop mylogcat
