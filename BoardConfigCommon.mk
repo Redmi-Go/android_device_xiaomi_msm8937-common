@@ -161,6 +161,9 @@ else
 TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/fstab.recovery.qcom
 endif
 
+# RIL
+TARGET_USES_OLD_MNC_FORMAT := true
+
 # SELinux
 include device/qcom/sepolicy-legacy-um/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(VENDOR_PATH)/sepolicy
