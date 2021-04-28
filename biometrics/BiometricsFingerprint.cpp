@@ -214,7 +214,6 @@ IBiometricsFingerprint* BiometricsFingerprint::getInstance() {
 
 void BiometricsFingerprint::setFpVendorProp(const char *fp_vendor) {
     property_set("persist.vendor.sys.fp.vendor", fp_vendor);
-    property_set("ro.boot.fpsensor", fp_vendor);
 }
 
 fingerprint_device_t* BiometricsFingerprint::getDeviceForVendor(const char *class_name) {
