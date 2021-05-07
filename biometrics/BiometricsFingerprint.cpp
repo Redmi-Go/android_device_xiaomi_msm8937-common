@@ -227,9 +227,17 @@ fingerprint_device_t* BiometricsFingerprint::getDeviceForVendor(const char *clas
     snprintf(temp_module_name, sizeof(temp_module_name), "%s_%s", device_name, class_name);
     module_name = (const char *) &temp_module_name;
     ALOGD("Opening fingerprint hal library %s ...", module_name);
-    if (0 != (err = hw_get_module_by_class(FINGERPRINT_HARDWARE_MODULE_ID, module_name, &hw_mdl))) {
-        ALOGE("Can't open fingerprint HW Module, error: %d", err);
-        return nullptr;
+
+    if (std::string(module_name) == "ugg_goodix") {
+        if (0 != (err = hw_get_module("gf_fingerprint", &hw_mdl))) {
+            ALOGE("Can't open ugg_goodix fingerprint HW Module, error: %d", err);
+            return nullptr;
+        }
+    } else {
+        if (0 != (err = hw_get_module_by_class(FINGERPRINT_HARDWARE_MODULE_ID, module_name, &hw_mdl))) {
+            ALOGE("Can't open fingerprint HW Module, error: %d", err);
+            return nullptr;
+        }
     }
 
     if (hw_mdl == nullptr) {
