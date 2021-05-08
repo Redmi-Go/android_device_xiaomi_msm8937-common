@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 extern bool is_old_goodix;
+extern char fp_vendor_prop[PROPERTY_VALUE_MAX];
 extern char device_name[PROPERTY_VALUE_MAX];
 
 namespace android {
@@ -287,6 +288,9 @@ fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
 {
     fingerprint_device_t *fp_device;
 
+    if (std::string(fp_vendor_prop) == "goodix")
+        goto load_goodix;
+
     fp_device = BiometricsFingerprint::getDeviceForVendor("fpc");
     if (fp_device == nullptr) {
         ALOGE("Failed to load fpc fingerprint module");
@@ -295,6 +299,7 @@ fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
         return fp_device;
     }
 
+    load_goodix:
     fp_device = BiometricsFingerprint::getDeviceForVendor("goodix");
     if (fp_device == nullptr) {
         ALOGE("Failed to load goodix fingerprint module");
