@@ -17,6 +17,7 @@
 #define LOG_TAG "android.hardware.biometrics.fingerprint@2.1-service"
 
 #include <android/log.h>
+#include <cutils/properties.h>
 #include <hidl/HidlSupport.h>
 #include <hidl/HidlTransportSupport.h>
 #include <android/hardware/biometrics/fingerprint/2.1/IBiometricsFingerprint.h>
@@ -29,10 +30,21 @@ using android::hardware::configureRpcThreadpool;
 using android::hardware::joinRpcThreadpool;
 using android::sp;
 
+bool is_old_goodix = false;
+char fp_vendor_prop[PROPERTY_VALUE_MAX];
 char device_name[PROPERTY_VALUE_MAX];
+char series_name[PROPERTY_VALUE_MAX];
 
 int main() {
+    property_get("ro.hardware.fingerprint", fp_vendor_prop, "default");
     property_get("ro.xiaomi.device", device_name, "default");
+    property_get("ro.xiaomi.series", series_name, "default");
+
+    if (std::string(fp_vendor_prop) == "goodix") {
+        if (std::string(series_name) == "landtoni") {
+            is_old_goodix = true;
+        }
+    }
 
     android::sp<IBiometricsFingerprint> bio = BiometricsFingerprint::getInstance();
 

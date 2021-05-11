@@ -26,6 +26,7 @@
 #include <inttypes.h>
 #include <unistd.h>
 
+extern bool is_old_goodix;
 extern char device_name[PROPERTY_VALUE_MAX];
 
 namespace android {
