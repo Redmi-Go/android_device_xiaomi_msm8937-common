@@ -16,6 +16,8 @@
 #define LOG_TAG "android.hardware.biometrics.fingerprint@2.1-service.xiaomi_msm8937"
 #define LOG_VERBOSE "android.hardware.biometrics.fingerprint@2.1-service.xiaomi_msm8937"
 
+#include <android-base/file.h>
+
 #include <hardware/hw_auth_token.h>
 
 #include <hardware/hardware.h>
@@ -23,12 +25,14 @@
 #include "BiometricsFingerprint.h"
 
 #include <cutils/properties.h>
+#include <sys/ioctl.h>
 #include <inttypes.h>
 #include <unistd.h>
 
 extern bool is_old_goodix;
 extern char fp_vendor_prop[PROPERTY_VALUE_MAX];
 extern char device_name[PROPERTY_VALUE_MAX];
+extern char series_name[PROPERTY_VALUE_MAX];
 
 namespace android {
 namespace hardware {
@@ -286,10 +290,20 @@ fingerprint_device_t* BiometricsFingerprint::getDeviceForVendor(const char *clas
 
 fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
 {
+    int fd;
+    int ret = 0;
     fingerprint_device_t *fp_device;
 
     if (std::string(fp_vendor_prop) == "goodix")
         goto load_goodix;
+
+    // Reset FPC Hardware
+    if (std::string(series_name) == "landtoni")
+        ret = android::base::WriteStringToFile("disable", "/sys/devices/soc/soc:fpc1020/compatible_all", true);
+    else if (std::string(series_name) == "ulysse")
+        ret = android::base::WriteStringToFile("reset", "/sys/devices/soc/soc:fpc1020/hw_reset", true);
+    if (!ret)
+        ALOGE("Failed to reset fpc hardware. ret=%d", ret);
 
     fp_device = BiometricsFingerprint::getDeviceForVendor("fpc");
     if (fp_device == nullptr) {
@@ -300,6 +314,19 @@ fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
     }
 
     load_goodix:
+    // Reset Goodix Hardware
+    ret = 0;
+    fd = open("/dev/goodix_fp", O_RDWR);
+    if (fd >= 0) {
+        if (std::string(series_name) == "landtoni")
+            ret = ioctl(fd, _IO('G', 12));
+
+        if (ret) {
+            ALOGE("Failed to reset goodix hardware. ret=%d", ret);
+        }
+    }
+    close(fd);
+
     fp_device = BiometricsFingerprint::getDeviceForVendor("goodix");
     if (fp_device == nullptr) {
         ALOGE("Failed to load goodix fingerprint module");
