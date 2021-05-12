@@ -320,6 +320,8 @@ fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
     if (fd >= 0) {
         if (std::string(series_name) == "landtoni")
             ret = ioctl(fd, _IO('G', 12));
+        else if (std::string(series_name) == "ulysse")
+            ret = ioctl(fd, _IO('G', 14));
 
         if (ret) {
             ALOGE("Failed to reset goodix hardware. ret=%d", ret);
