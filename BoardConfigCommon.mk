@@ -153,9 +153,6 @@ TARGET_USES_INTERACTION_BOOST := true
 # Qualcomm
 BOARD_USES_QCOM_HARDWARE := true
 
-# Recovery
-TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/fstab.recovery.qcom
-
 # RIL
 TARGET_USES_OLD_MNC_FORMAT := true
 
