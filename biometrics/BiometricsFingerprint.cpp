@@ -290,7 +290,7 @@ fingerprint_device_t* BiometricsFingerprint::getDeviceForVendor(const char *clas
 
 fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
 {
-    int fd;
+//    int fd;
     int ret = 0;
     fingerprint_device_t *fp_device;
 
@@ -315,6 +315,7 @@ fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
 
     load_goodix:
     // Reset Goodix Hardware
+/*
     ret = 0;
     fd = open("/dev/goodix_fp", O_RDWR);
     if (fd >= 0) {
@@ -328,6 +329,7 @@ fingerprint_device_t* BiometricsFingerprint::getFingerprintDevice()
         }
     }
     close(fd);
+*/
 
     fp_device = BiometricsFingerprint::getDeviceForVendor("goodix");
     if (fp_device == nullptr) {
