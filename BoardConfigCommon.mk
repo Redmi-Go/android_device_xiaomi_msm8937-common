@@ -158,6 +158,7 @@ BOARD_USES_QCOM_HARDWARE := true
 TARGET_USES_OLD_MNC_FORMAT := true
 
 # SELinux
+SELINUX_IGNORE_NEVERALLOWS := true
 include device/qcom/sepolicy-legacy-um/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(VENDOR_PATH)/sepolicy
 
